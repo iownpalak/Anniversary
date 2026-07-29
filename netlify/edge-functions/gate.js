@@ -1,4 +1,4 @@
-const TARGET_TIME = new Date("2026-07-29T17:40:00+05:30").getTime();
+const TARGET_TIME = new Date("2026-07-30T00:00:00+05:30").getTime();
 
 export default async (request, context) => {
   const now = Date.now();
@@ -228,7 +228,7 @@ const COUNTDOWN_HTML = `<!DOCTYPE html>
     } catch (e) {}
   }
 
-  var target = new Date("2026-07-29T17:40:00+05:30").getTime();
+  var target = new Date("2026-07-30T00:00:00+05:30").getTime();
   function tick() {
     var diff = target - Date.now();
     if (diff <= 0) {
