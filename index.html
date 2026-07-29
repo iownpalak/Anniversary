@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<script>
+(function () {
+  function isAllowedDevice() {
+    var ua = navigator.userAgent || '';
+    var isAndroidUA = /android/i.test(ua);
+    var coarse = false, noHover = false;
+    try {
+      coarse = window.matchMedia('(pointer: coarse)').matches;
+      noHover = window.matchMedia('(hover: none)').matches;
+    } catch (e) {}
+    var hasTouch = (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+    // Real Android UA covers normal mode. Coarse pointer + no hover + touch
+    // covers the case where "Desktop site" is switched on in the phone's
+    // browser (which rewrites the UA string to look like a desktop).
+    return isAndroidUA || (coarse && noHover && hasTouch);
+  }
+
+  function blockAccess() {
+    try { window.stop(); } catch (e) {}
+    try {
+      // Avoid document.write() here — on slow connections some browsers
+      // silently block it for the main page, which left this screen blank
+      // instead of showing the notice. This can also run before <body>
+      // exists yet (first pass, mid-parse), so we replace the <html>
+      // element's content directly instead, which is always available.
+      document.documentElement.innerHTML =
+        '<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Not Available</title>' +
+        '<style>' +
+        '*{margin:0;padding:0;box-sizing:border-box}' +
+        'html,body{height:100%;}' +
+        'body{min-height:100vh;display:flex;align-items:center;justify-content:center;' +
+        'background:#0a0908;color:#f4ede1;font-family:Georgia,\'Times New Roman\',serif;' +
+        'text-align:center;padding:32px}' +
+        'body p{max-width:420px;font-size:1rem;line-height:1.7;letter-spacing:.02em;opacity:.92}' +
+        '</style></head>' +
+        '<body><p>Please use android operating system smartphone to access this website.</p></body>';
+    } catch (e) {}
+  }
+
+  if (!isAllowedDevice()) {
+    blockAccess();
+    return;
+  }
+
+  // If the phone's browser has "Desktop site" switched on, it reports a
+  // wide fake viewport, which is why images/layout look shrunk and
+  // cropped. Force the real viewport width so the responsive layout and
+  // image ratios render correctly.
+  try {
+    var vp = document.querySelector('meta[name="viewport"]');
+    var fakeDesktopViewport = window.innerWidth > (window.screen.width * 1.35);
+    if (vp && fakeDesktopViewport) {
+      vp.setAttribute('content', 'width=' + window.screen.width + ', initial-scale=1, viewport-fit=cover');
+    }
+  } catch (e) {}
+
+  // Re-check periodically / on resize so a live devtools device-toolbar
+  // toggle (without a full reload) still gets caught.
+  window.addEventListener('resize', function () {
+    if (!isAllowedDevice()) blockAccess();
+  });
+  setInterval(function () {
+    if (!isAllowedDevice()) blockAccess();
+  }, 2000);
+})();
+</script>
+<title>Happy Anniversary — Palak &amp; J</title>
+<meta name="description" content="Two years, still falling — a cinematic anniversary story for Palak." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Cormorant+SC:wght@500;600&family=Manrope:wght@300;400;500;600;700&family=Petit+Formal+Script&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <svg class="preloader-bloom" width="64" height="64" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="27" class="preloader-ring" />
+    </svg>
+    <p class="preloader-label">gathering the light</p>
+  </div>
+</div>
+
+<div id="intro" aria-hidden="true">
+  <canvas id="heart-canvas"></canvas>
+  <div class="intro-copy">
+    <span class="eyebrow">Two Years Together</span>
+    <p class="intro-title">Happy Anniversary, Palak</p>
+    <button id="enter-btn" type="button">Enter</button>
+  </div>
+</div>
+
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+<div id="cursor-glow" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+
+<header class="site-nav">
+  <a href="#hero" class="nav-mark" aria-label="Return to top" data-monogram></a>
+  <nav class="nav-links" aria-label="Section navigation">
+    <a href="#timeline" data-nav>Story</a>
+    <a href="#gallery" data-nav>Gallery</a>
+    <a href="#memories" data-nav>Memories</a>
+    <a href="#letter" data-nav>Letter</a>
+    <a href="#countdown" data-nav>Countdown</a>
+  </nav>
+</header>
+
+<main>
+
+  <section id="hero" class="hero">
+    <div class="hero-pin">
+      <canvas id="hero-canvas"></canvas>
+      <svg id="bloom-svg" class="bloom-svg" viewBox="0 0 400 400" aria-hidden="true">
+        <g id="bloom-group" transform="translate(200,200)"></g>
+      </svg>
+      <div class="hero-vignette"></div>
+
+      <div class="hero-stage" data-stage="0">
+        <p class="hero-eyebrow">in the quiet, before anything begins</p>
+      </div>
+
+      <div class="hero-stage" data-stage="1">
+        <p class="hero-eyebrow">a light finds its way in</p>
+      </div>
+
+      <div class="hero-stage" data-stage="2">
+        <p class="hero-eyebrow">and somewhere, softly — it blooms</p>
+      </div>
+
+      <div class="hero-stage hero-stage-title" data-stage="3">
+        <p class="hero-eyebrow">two years ago, a story began</p>
+        <h1 class="hero-title">
+          <span class="hero-title-line">Happy</span>
+          <span class="hero-title-line hero-title-line--italic">Anniversary</span>
+          <span class="hero-title-line">Palak</span>
+        </h1>
+        <p class="hero-sub">Two years. One story, still being written.</p>
+        <div class="hero-scroll-cue">
+          <span></span>
+          <em>scroll to begin</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="timeline" class="section timeline-section">
+    <div class="section-head">
+      <p class="eyebrow">I. the story so far</p>
+      <h2 class="section-title">Every road<br /><em>led here.</em></h2>
+    </div>
+
+    <ol class="timeline">
+      <li class="timeline-item" data-index="I">
+        <div class="timeline-marker"><span>I</span></div>
+        <div class="timeline-card glass">
+          <p class="timeline-date">2024 · Universe Group</p>
+          <h3>Where it started</h3>
+          <p>A random Instagram group chat called "Universe" — the last place I expected to find someone. We started talking, just casually, never thinking it would become the conversation I'd remember most.</p>
+        </div>
+      </li>
+
+      <li class="timeline-item" data-index="II">
+        <div class="timeline-marker"><span>II</span></div>
+        <div class="timeline-card glass">
+          <p class="timeline-date">Slowly, then completely</p>
+          <h3>When I knew</h3>
+          <p>There wasn't a single moment — there were a hundred small ones, message by message, day by day, until one day I realised I was falling for you, quietly and completely.</p>
+        </div>
+      </li>
+
+      <li class="timeline-item" data-index="III">
+        <div class="timeline-marker"><span>III</span></div>
+        <div class="timeline-card glass">
+          <p class="timeline-date">July 30, 2024</p>
+          <h3>Choosing each other</h3>
+          <p>The day it became official. Not a grand gesture — just two people who'd already found their way to each other, finally saying it out loud.</p>
+        </div>
+      </li>
+
+      <li class="timeline-item" data-index="IV">
+        <div class="timeline-marker"><span>IV</span></div>
+        <div class="timeline-card glass">
+          <p class="timeline-date">Today</p>
+          <h3>Two years in</h3>
+          <p>Still here. Still choosing. Still, somehow, falling a little further every single day — and I wouldn't trade a single one of these seven hundred and thirty days.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="gallery" class="section gallery-section">
+    <div class="section-head">
+      <p class="eyebrow">II. fragments we kept</p>
+      <h2 class="section-title">Moments,<br /><em>held onto.</em></h2>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </section>
+
+  <section id="flight" class="flight-section">
+    <video id="flight-video" class="flight-video" src="frames/video_frames/birds.mp4" autoplay muted loop playsinline></video>
+    <div class="flight-overlay">
+      <p class="eyebrow eyebrow--center">between us, always</p>
+      <h3>Some things fly<br /><em>quietly toward forever.</em></h3>
+    </div>
+  </section>
+
+  <section id="frame" class="section frame-section">
+    <div class="section-head section-head--center">
+      <p class="eyebrow">III. the first ones</p>
+      <h2 class="section-title">Where it<br /><em>all began.</em></h2>
+    </div>
+    <div class="photo-frame" id="photo-frame">
+      <div class="photo-frame-slot photo-frame-slot--top" data-caption="The journey begins">
+        <div class="photo-frame-slot-inner">
+          <img src="memories/New%20Folder/first%20story.jpg" alt="First story shared, about black holes" loading="lazy" />
+          <span class="photo-frame-caption"></span>
+        </div>
+        <span class="photo-frame-tag">I</span>
+      </div>
+      <div class="photo-frame-connector" aria-hidden="true"><span></span></div>
+      <div class="photo-frame-slot photo-frame-slot--bottom">
+        <div class="photo-frame-slot-inner">
+          <img src="memories/New%20Folder%202/IMG_20260727_141436_149.jpg" alt="Mehndi, shown for the first time" loading="lazy" />
+          <span class="photo-frame-caption"></span>
+        </div>
+        <span class="photo-frame-tag">II</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="milestones" class="section milestones-section">
+    <div class="milestones-glow" aria-hidden="true"></div>
+    <div class="section-head section-head--center">
+      <p class="eyebrow">IV. counted in small numbers</p>
+      <h2 class="section-title">Two years,<br /><em>by the numbers.</em></h2>
+    </div>
+
+    <div class="milestones-grid">
+      <div class="milestone">
+        <p class="milestone-number" data-count-to="2">0</p>
+        <p class="milestone-label">Years Together</p>
+      </div>
+      <div class="milestone">
+        <p class="milestone-number" data-count-to="24">0</p>
+        <p class="milestone-label">Months of "Us"</p>
+      </div>
+      <div class="milestone">
+        <p class="milestone-number" data-count-to="730">0</p>
+        <p class="milestone-label">Sunrises Shared</p>
+      </div>
+      <div class="milestone">
+        <p class="milestone-number milestone-number--infinite">&infin;</p>
+        <p class="milestone-label">More To Come</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="memories" class="section memories-section">
+    <div class="section-head">
+      <p class="eyebrow">V. memories we've kept</p>
+      <h2 class="section-title">Every folder,<br /><em>a small forever.</em></h2>
+    </div>
+    <div class="memories-grid" id="memories-grid"></div>
+  </section>
+
+  <section id="letter" class="section letter-section">
+    <div class="letter-paper glass">
+      <p class="letter-seal" aria-hidden="true" data-monogram></p>
+      <p class="eyebrow eyebrow--center">VI. a letter, just for you</p>
+      <div class="letter-body">
+        <p>My Palak,</p>
+        <p>Two years ago, a random "Universe" group chat somehow led me to you. I didn't plan for any of it — I just kept wanting to talk to you, one day at a time, until one day that turned into forever.</p>
+        <p>Thank you for the patience, the laughter, the quiet steadiness you bring to my loudest days. Thank you for choosing this — choosing <em>us</em> — over and over, especially on the days it wasn't easy.</p>
+        <p>Here's to the years we haven't lived yet. I'll choose you in every single one of them.</p>
+      </div>
+      <p class="letter-sign">Forever yours, J</p>
+    </div>
+  </section>
+
+  <section id="wishes" class="section wishes-section">
+    <div class="section-head section-head--center">
+      <p class="eyebrow">VII. what I wish for us</p>
+      <h2 class="section-title">A few quiet<br /><em>wishes.</em></h2>
+    </div>
+
+    <div class="wishes-grid">
+      <div class="wish-card glass">
+        <span class="wish-icon" aria-hidden="true">✦</span>
+        <h3>More Ordinary Days</h3>
+        <p>Not just the big celebrations — the slow mornings, the quiet nights, the years made of nothing extraordinary except that we're in them together.</p>
+      </div>
+      <div class="wish-card glass">
+        <span class="wish-icon" aria-hidden="true">✦</span>
+        <h3>A Love That Stays Soft</h3>
+        <p>That we keep choosing kindness, even when we're tired. That we never stop noticing each other in the small ways that matter most.</p>
+      </div>
+      <div class="wish-card glass">
+        <span class="wish-icon" aria-hidden="true">✦</span>
+        <h3>Every Year After This</h3>
+        <p>Here's to the anniversaries we haven't reached yet — and to writing every one of those chapters with you, at whatever pace life asks of us.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="countdown" class="section countdown-section">
+    <div class="countdown-glow" aria-hidden="true"></div>
+    <div class="section-head section-head--center">
+      <p class="eyebrow">VIII. what's next</p>
+      <h2 class="section-title">Counting down to<br /><em>year three.</em></h2>
+    </div>
+
+    <div class="countdown-grid" id="countdown-grid">
+      <div class="countdown-unit glass">
+        <p class="countdown-value" id="cd-days">00</p>
+        <p class="countdown-label">Days</p>
+      </div>
+      <div class="countdown-unit glass">
+        <p class="countdown-value" id="cd-hours">00</p>
+        <p class="countdown-label">Hours</p>
+      </div>
+      <div class="countdown-unit glass">
+        <p class="countdown-value" id="cd-minutes">00</p>
+        <p class="countdown-label">Minutes</p>
+      </div>
+      <div class="countdown-unit glass">
+        <p class="countdown-value" id="cd-seconds">00</p>
+        <p class="countdown-label">Seconds</p>
+      </div>
+    </div>
+    <p class="countdown-caption">until we celebrate three.</p>
+  </section>
+
+  <section id="showcase" class="showcase-section">
+    <div class="showcase-panel" data-speed="0.8">
+      <img class="showcase-img" alt="A quiet, glowing evening" loading="lazy" />
+      <div class="showcase-overlay">
+        <p class="eyebrow">IX. seen, remembered</p>
+        <h3>Some nights felt<br /><em>lit from within.</em></h3>
+      </div>
+    </div>
+    <div class="showcase-panel" data-speed="1.1">
+      <img class="showcase-img" alt="A soft, still moment" loading="lazy" />
+      <div class="showcase-overlay">
+        <h3>You made the ordinary<br /><em>feel cinematic.</em></h3>
+      </div>
+    </div>
+  </section>
+
+  <section id="ourvideo" class="section ourvideo-section" hidden>
+    <div class="section-head section-head--center">
+      <p class="eyebrow">X. a moving memory</p>
+      <h2 class="section-title">A little<br /><em>motion, too.</em></h2>
+    </div>
+    <video id="our-video" class="our-video" controls playsinline></video>
+  </section>
+
+  <section id="forever" class="section forever-section">
+    <canvas id="forever-canvas" aria-hidden="true"></canvas>
+    <div class="forever-content">
+      <p class="eyebrow eyebrow--center">always</p>
+      <h2 class="forever-title">Forever,<br /><em>Together.</em></h2>
+      <p class="forever-sub">Happy anniversary, my love. Here's to every year after this one.</p>
+      <div class="forever-gallery" id="forever-gallery" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>
